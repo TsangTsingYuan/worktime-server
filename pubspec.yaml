@@ -1,0 +1,15 @@
+name: worktime_server
+description: WorkTime App backend API server
+version: 1.0.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+  sqlite3: ^2.4.0
+  dart_jsonwebtoken: ^2.14.0
+  bcrypt: ^1.1.0
+  uuid: ^4.0.0
+  dotenv: ^4.0.1
