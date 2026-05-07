@@ -7,6 +7,7 @@ import 'handlers/auth_handler.dart';
 import 'handlers/worklog_handler.dart';
 import 'handlers/sync_handler.dart';
 import 'handlers/settings_handler.dart';
+import 'handlers/todo_handler.dart';
 
 Router build(Database db, String jwtSecret) {
   final router = Router();
@@ -24,6 +25,11 @@ Router build(Database db, String jwtSecret) {
   router.delete('/api/worklogs/<id>', auth(worklogHandler(db, jwtSecret)));
 
   router.post('/api/sync', auth(syncHandler(db, jwtSecret)));
+
+  router.get('/api/todos', auth(todoHandler(db, jwtSecret)));
+  router.post('/api/todos', auth(todoHandler(db, jwtSecret)));
+  router.put('/api/todos/<id>', auth(todoHandler(db, jwtSecret)));
+  router.delete('/api/todos/<id>', auth(todoHandler(db, jwtSecret)));
 
   router.get('/api/settings', auth(settingsHandler(db, jwtSecret)));
   router.put('/api/settings', auth(settingsHandler(db, jwtSecret)));

@@ -45,6 +45,96 @@ class UserModel {
   );
 }
 
+class TodoModel {
+  final String id;
+  final String userId;
+  final String? clientId;
+  final String title;
+  final String description;
+  final int priority;
+  final int status;
+  final int? dueDate;
+  final String category;
+  final String? linkedWorkLogClientId;
+  final String? parentClientId;
+  final String recurringRule;
+  final int sortOrder;
+  final int createdAt;
+  final int updatedAt;
+
+  TodoModel({
+    required this.id,
+    required this.userId,
+    this.clientId,
+    required this.title,
+    this.description = '',
+    this.priority = 1,
+    this.status = 0,
+    this.dueDate,
+    this.category = '',
+    this.linkedWorkLogClientId,
+    this.parentClientId,
+    this.recurringRule = '',
+    this.sortOrder = 0,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'user_id': userId,
+    'client_id': clientId,
+    'title': title,
+    'description': description,
+    'priority': priority,
+    'status': status,
+    'due_date': dueDate,
+    'category': category,
+    'linked_work_log_client_id': linkedWorkLogClientId,
+    'parent_client_id': parentClientId,
+    'recurring_rule': recurringRule,
+    'sort_order': sortOrder,
+    'created_at': createdAt,
+    'updated_at': updatedAt,
+  };
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'userId': userId,
+    'clientId': clientId,
+    'title': title,
+    'description': description,
+    'priority': priority,
+    'status': status,
+    'dueDate': dueDate,
+    'category': category,
+    'linkedWorkLogClientId': linkedWorkLogClientId,
+    'parentClientId': parentClientId,
+    'recurringRule': recurringRule,
+    'sortOrder': sortOrder,
+    'createdAt': createdAt,
+    'updatedAt': updatedAt,
+  };
+
+  factory TodoModel.fromJson(Map<String, dynamic> json) => TodoModel(
+    id: json['id'],
+    userId: json['userId'],
+    clientId: json['clientId']?.toString(),
+    title: json['title'] ?? '',
+    description: json['description'] ?? '',
+    priority: json['priority'] ?? 1,
+    status: json['status'] ?? 0,
+    dueDate: json['dueDate'],
+    category: json['category'] ?? '',
+    linkedWorkLogClientId: json['linkedWorkLogClientId']?.toString(),
+    parentClientId: json['parentClientId']?.toString(),
+    recurringRule: json['recurringRule'] ?? '',
+    sortOrder: json['sortOrder'] ?? 0,
+    createdAt: json['createdAt'],
+    updatedAt: json['updatedAt'],
+  );
+}
+
 class WorkLogModel {
   final String id;
   final String userId;

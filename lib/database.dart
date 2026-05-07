@@ -47,6 +47,30 @@ class Database {
     _db.execute('CREATE INDEX IF NOT EXISTS idx_work_logs_user ON work_logs(user_id)');
     _db.execute('CREATE INDEX IF NOT EXISTS idx_work_logs_updated ON work_logs(updated_at)');
     _db.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_work_logs_client ON work_logs(user_id, client_id)');
+
+    _db.execute('''
+      CREATE TABLE IF NOT EXISTS todos (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        client_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        priority INTEGER DEFAULT 1,
+        status INTEGER DEFAULT 0,
+        due_date INTEGER,
+        category TEXT DEFAULT '',
+        linked_work_log_client_id TEXT,
+        parent_client_id TEXT,
+        recurring_rule TEXT DEFAULT '',
+        sort_order INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    ''');
+    _db.execute('CREATE INDEX IF NOT EXISTS idx_todos_user ON todos(user_id)');
+    _db.execute('CREATE INDEX IF NOT EXISTS idx_todos_updated ON todos(updated_at)');
+    _db.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_todos_client ON todos(user_id, client_id)');
   }
 
   // ─── User CRUD ───
@@ -131,5 +155,44 @@ class Database {
 
   void dispose() {
     _db.dispose();
+  }
+
+  // ─── Todo CRUD ───
+
+  void insertTodo(Map<String, dynamic> todo) {
+    _db.execute(
+      'INSERT INTO todos (id, user_id, client_id, title, description, priority, status, due_date, category, linked_work_log_client_id, parent_client_id, recurring_rule, sort_order, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [todo['id'], todo['user_id'], todo['client_id'], todo['title'], todo['description'], todo['priority'], todo['status'], todo['due_date'], todo['category'], todo['linked_work_log_client_id'], todo['parent_client_id'], todo['recurring_rule'], todo['sort_order'], todo['created_at'], todo['updated_at']],
+    );
+  }
+
+  void updateTodo(Map<String, dynamic> todo) {
+    _db.execute(
+      'UPDATE todos SET title = ?, description = ?, priority = ?, status = ?, due_date = ?, category = ?, linked_work_log_client_id = ?, parent_client_id = ?, recurring_rule = ?, sort_order = ?, updated_at = ? WHERE id = ? AND user_id = ?',
+      [todo['title'], todo['description'], todo['priority'], todo['status'], todo['due_date'], todo['category'], todo['linked_work_log_client_id'], todo['parent_client_id'], todo['recurring_rule'], todo['sort_order'], todo['updated_at'], todo['id'], todo['user_id']],
+    );
+  }
+
+  void deleteTodo(String id, String userId) {
+    _db.execute('DELETE FROM todos WHERE id = ? AND user_id = ?', [id, userId]);
+  }
+
+  List<Map<String, dynamic>> getTodosSince(String userId, int sinceMs) {
+    final result = _db.select(
+      'SELECT * FROM todos WHERE user_id = ? AND updated_at > ? ORDER BY updated_at ASC',
+      [userId, sinceMs],
+    );
+    return result.map((r) => Map<String, dynamic>.from(r)).toList();
+  }
+
+  List<Map<String, dynamic>> getTodosByClientIds(String userId, List<String> clientIds) {
+    if (clientIds.isEmpty) return [];
+    final placeholders = clientIds.map((_) => '?').join(',');
+    final params = [userId, ...clientIds];
+    final result = _db.select(
+      'SELECT client_id FROM todos WHERE user_id = ? AND client_id IN ($placeholders)',
+      params,
+    );
+    return result.map((r) => Map<String, dynamic>.from(r)).toList();
   }
 }
