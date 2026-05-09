@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "WorkTime Server",
+      "type": "dart",
+      "request": "launch",
+      "program": "bin/server.dart",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "env": {
+        "PORT": "8080",
+        "DB_PATH": "data.db",
+        "JWT_SECRET": "change-me-in-production",
+        "ALLOWED_ORIGIN": "*"
+      }
+    }
+  ]
+}
