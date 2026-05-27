@@ -83,7 +83,8 @@ Handler worklogHandler(Database db, String jwtSecret) {
 
     // PUT /api/worklogs/:id
     if (request.method == 'PUT') {
-      final logId = request.url.pathSegments.last;
+      final segments = request.url.pathSegments;
+      final logId = segments.isNotEmpty ? segments.last : (request.url.path.split('/').lastWhere((s) => s.isNotEmpty));
       final now = DateTime.now().millisecondsSinceEpoch;
 
       db.updateWorkLog({
@@ -107,7 +108,8 @@ Handler worklogHandler(Database db, String jwtSecret) {
 
     // DELETE /api/worklogs/:id
     if (request.method == 'DELETE') {
-      final logId = request.url.pathSegments.last;
+      final segments = request.url.pathSegments;
+      final logId = segments.isNotEmpty ? segments.last : (request.url.path.split('/').lastWhere((s) => s.isNotEmpty));
       db.deleteWorkLog(logId, userId);
       return Response.ok(
         jsonEncode({'ok': true}),
